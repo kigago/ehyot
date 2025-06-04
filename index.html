@@ -1,34 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Ronin NFT Test</title>
+  <meta charset="UTF-8">
+  <title>Ronin Wallet Connect</title>
 </head>
 <body>
-  <h1>Hello, Ronin Wallet!</h1>
+  <h1>My NFT Mining Game</h1>
   <button id="connectBtn">Connect Ronin Wallet</button>
+  <p id="walletAddress">Wallet not connected</p>
 
-  <p id="walletAddress">Wallet not connected.</p>
-
+  <!-- Include ethers.js (used to connect to wallets) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+
   <script>
-    const connectBtn = document.getElementById('connectBtn');
-    const walletAddress = document.getElementById('walletAddress');
+    const connectBtn = document.getElementById("connectBtn");
+    const walletAddress = document.getElementById("walletAddress");
 
     connectBtn.onclick = async () => {
-      if (!window.ethereum) {
+      // Detect if Ronin or Ethereum provider is injected
+      const providerSource = window.ronin || window.ethereum;
+
+      if (!providerSource) {
         alert("Ronin Wallet not detected. Please install it.");
         return;
       }
 
       try {
-       const provider = new ethers.providers.Web3Provider(window.ronin || window.ethereum);
+        // Connect to the wallet using ethers.js
+        const provider = new ethers.providers.Web3Provider(providerSource);
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const address = await signer.getAddress();
         walletAddress.innerText = `Wallet connected: ${address}`;
       } catch (err) {
-        walletAddress.innerText = 'Connection failed.';
-        console.error(err);
+        console.error("Connection error:", err);
+        walletAddress.innerText = "Connection failed.";
       }
     };
   </script>
