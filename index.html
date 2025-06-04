@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ronin Wallet Connect</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #address { margin-top: 20px; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>My NFT Mining Game</h1>
-  <button id="connectBtn">Connect Ronin Wallet</button>
-  <p id="walletAddress">Wallet not connected</p>
 
-  <!-- Include ethers.js (used to connect to wallets) -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <h2>Connect to Ronin Wallet</h2>
+  <button id="connectBtn">Connect Wallet</button>
+  <div id="address"></div>
 
   <script>
-    const connectBtn = document.getElementById("connectBtn");
-    const walletAddress = document.getElementById("walletAddress");
+    const connectBtn = document.getElementById('connectBtn');
+    const addressDiv = document.getElementById('address');
 
     connectBtn.onclick = async () => {
-      // Detect if Ronin or Ethereum provider is injected
-      const providerSource = window.ronin || window.ethereum;
-
-      if (!providerSource) {
-        alert("Ronin Wallet not detected. Please install it.");
+      if (typeof window.ronin === 'undefined') {
+        alert('Ronin Wallet extension not detected!');
         return;
       }
 
       try {
-        // Connect to the wallet using ethers.js
-        const provider = new ethers.providers.Web3Provider(providerSource);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        const address = await signer.getAddress();
-        walletAddress.innerText = `Wallet connected: ${address}`;
+        const accounts = await window.ronin.request({
+          method: 'eth_requestAccounts'
+        });
+
+        const walletAddress = accounts[0];
+        addressDiv.innerText = `Connected Wallet: ${walletAddress}`;
       } catch (err) {
-        console.error("Connection error:", err);
-        walletAddress.innerText = "Connection failed.";
+        console.error('Connection error:', err);
+        alert('Failed to connect to Ronin Wallet.');
       }
     };
   </script>
+
 </body>
 </html>
