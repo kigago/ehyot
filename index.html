@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ronin NFT Test</title>
+</head>
+<body>
+  <h1>Hello, Ronin Wallet!</h1>
+  <button id="connectBtn">Connect Ronin Wallet</button>
+
+  <p id="walletAddress">Wallet not connected.</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const walletAddress = document.getElementById('walletAddress');
+
+    connectBtn.onclick = async () => {
+      if (!window.ethereum) {
+        alert("Ronin Wallet not detected. Please install it.");
+        return;
+      }
+
+      try {
+       const provider = new ethers.providers.Web3Provider(window.ronin || window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        walletAddress.innerText = `Wallet connected: ${address}`;
+      } catch (err) {
+        walletAddress.innerText = 'Connection failed.';
+        console.error(err);
+      }
+    };
+  </script>
+</body>
+</html>
